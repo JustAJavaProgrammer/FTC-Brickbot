@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Brickbot: OpMode (v0.1)", group="Linear Opmode")
 
-public class MyOpMode1 extends LinearOpMode {
+public class MyOpMode1 extends OpMode {
 	
 	private ElapsedTime runtime = new ElapsedTime();
 	DcMotor motorFrontLeft;
@@ -24,8 +25,7 @@ public class MyOpMode1 extends LinearOpMode {
 		rightPower = 0;
 
 	@Override
-	public void runOpMode() {
-
+	public void init() {
 		motorFrontLeft = hardwareMap.get(DcMotor.class, "motorfl");
 		motorFrontRight = hardwareMap.get(DcMotor.class, "motorfr");
 		motorBackLeft = hardwareMap.get(DcMotor.class, "motorbl");
@@ -35,39 +35,38 @@ public class MyOpMode1 extends LinearOpMode {
 		motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorBackLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
-		waitForStart();
-		runtime.reset();
-
-		while(opModeIsActive()) {
-
-			leftPower = 0;
-			rightPower = 0;
-
-			if(gamepad1.left_stick_y != 0) {
-
-				drive = -gamepad1.left_stick_y;
-				if(gamepad1.left_stick_y < 0)
-					turn = gamepad1.right_stick_x;
-				else turn = -gamepad1.right_stick_x;
-				leftPower = Range.clip(drive + turn, -1.0, 1.0);
-				rightPower = Range.clip(drive - turn, -1.0, 1.0);
-
-			} else if(gamepad1.left_stick_x != 0) {
-
-				drive = -gamepad1.left_stick_x;
-				leftPower = Range.clip(-drive, -1.0, 1.0);
-				rightPower = Range.clip(drive, -1.0, 1.0);
-
-			}
-
-			motorFrontLeft.setPower(leftPower);
-			motorFrontRight.setPower(rightPower);
-			motorBackLeft.setPower(leftPower);
-			motorBackRight.setPower(rightPower);
-			
-		}
-
 	}
 
+	@Override
+	public void start() {
+		runtime.reset();
+	}
+
+	@Override
+	public void loop() {
+		leftPower = 0;
+		rightPower = 0;
+
+		if(gamepad1.left_stick_y != 0) {
+
+			drive = -gamepad1.left_stick_y;
+			if(gamepad1.left_stick_y < 0)
+				turn = gamepad1.right_stick_x;
+			else turn = -gamepad1.right_stick_x;
+			leftPower = Range.clip(drive + turn, -1.0, 1.0);
+			rightPower = Range.clip(drive - turn, -1.0, 1.0);
+
+		} else if(gamepad1.left_stick_x != 0) {
+
+			drive = -gamepad1.left_stick_x;
+			leftPower = Range.clip(-drive, -1.0, 1.0);
+			rightPower = Range.clip(drive, -1.0, 1.0);
+
+		}
+
+		motorFrontLeft.setPower(leftPower);
+		motorFrontRight.setPower(rightPower);
+		motorBackLeft.setPower(leftPower);
+		motorBackRight.setPower(rightPower);
+	}
 }
