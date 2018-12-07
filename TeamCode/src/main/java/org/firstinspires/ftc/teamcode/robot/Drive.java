@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -15,6 +16,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Class responsible with controlling the drive train
  */
 public class Drive {
+	private Telemetry telemetry;
+	private Brickbot robot = Brickbot.getInstance();
+
 	/* Motors */
 	private DcMotor motorFrontLeft;
 	private DcMotor motorFrontRight;
@@ -23,6 +27,9 @@ public class Drive {
 
 	/* Constants */
 	//TODO: Verify constants
+	private static final double ROBOT_WIDTH = 13.97637795d;
+	private static final double ROBOT_LENGTH = 14.17322835d;
+
 	private static final double COUNTS_PER_MOTOR_REV    = 280.0d;       // Modify according to the drive motors
 	private static final double WHEEL_DIAMETER_INCHES   = 4.0d;
 	private static final double DRIVE_GEAR_REDUCTION    = 2.0d;         // Speed reduction
@@ -32,19 +39,21 @@ public class Drive {
 	private static final double TURN_SPEED   = 0.8d;
 
 	/* Constructor */
-	public Drive(Brickbot brickbot) {
+	public Drive() {
 		if (DRIVE_SPEED > 1.0d || TURN_SPEED > 1.0d)
 			throw new ArithmeticException();
 	}
 
 	/* Initialize */
-	public void init(HardwareMap hwMap) {
+	public void init(Telemetry telemetry, HardwareMap hwMap) {
+		this.telemetry = telemetry;
+
 		motorFrontLeft = hwMap.get(DcMotor.class, "motorfl");
 		motorFrontRight = hwMap.get(DcMotor.class, "motorfr");
 		motorBackLeft = hwMap.get(DcMotor.class, "motorbl");
 		motorBackRight = hwMap.get(DcMotor.class, "motorbr");
 
-		motorFrontLeft.setDirection(DcMotorSimple.Direction.FORWARD);   //TODO: Check if motors rotate in the intended direction
+		motorFrontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorBackLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -177,8 +186,9 @@ public class Drive {
 	public void rotate(Rotation rotation, AngleUnit unit, double angle) {
 		angle = unit.normalize(angle);
 		angle = unit.toDegrees(angle);
-		//TODO: Fix this
-		int modifier = 100;
+
+		int modifier = (int) (unit.toRadians(angle)
+						* Math.sqrt(ROBOT_LENGTH * ROBOT_LENGTH + ROBOT_WIDTH * ROBOT_WIDTH) * COUNTS_PER_INCH / 2);
 
 		switch (rotation) {
 			default:
