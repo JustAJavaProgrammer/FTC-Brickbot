@@ -20,7 +20,7 @@ public class TFOreIdentification {
 	private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
 	private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
 
-	private static final String VUFORIA_KEY = ""; //TODO: Get vuforia license
+	private static final String VUFORIA_KEY = "AT2NRwv/////AAAAGU5D4weL2U/CiqT7iKeygcA+FgHmuCe13qmg32QO4cxxZcznZ9ydCb/xUCn8Znx98oaFHp/HxW9ixs9m6HMCvSSLzWB+7ITI8SPzwRifDQxOyZORxgo3sQbCJAOH3oM6VerGlv7CWJAP1ZUPCoSn06rEwZdYCGQu96Q7v68xWm4rz/e1SfBDgKyCWrCiEyLgI4XRcG/x6Vte7jHPysUBzwlXD+SGKALxVpKMWDCLyO8m0ImJj7+OWZLEznMnzhyesLcoMpFnzwUnnvnNiTVknlOlTaa1bDJOpN/E8K97DEFGv7joxdF5BfWz5LYrnfEFfrila20i5P76Np2bLa+TX/BG2/J+IoSeSkvz3NTkrpI5";
 
 	private VuforiaLocalizer vuforia;
 	private TFObjectDetector tfod;
