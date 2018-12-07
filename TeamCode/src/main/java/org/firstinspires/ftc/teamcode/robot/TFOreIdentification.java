@@ -48,7 +48,7 @@ public class TFOreIdentification {
 		VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
 		parameters.vuforiaLicenseKey = VUFORIA_KEY;
-		parameters.cameraDirection = CameraDirection.BACK;
+		parameters.cameraDirection = CameraDirection.FRONT;
 
 		vuforia = ClassFactory.getInstance().createVuforia(parameters);
 	}
