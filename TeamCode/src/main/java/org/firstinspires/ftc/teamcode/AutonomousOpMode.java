@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.robot.Brickbot;
 
@@ -26,10 +27,8 @@ public class AutonomousOpMode extends LinearOpMode {
 
 		robot.sampleGoldOre();
 		sleep(5000);
+
+		while (opModeIsActive()) {
+		}
 	}
-
-
 }
-//Brickbot:     set power to drive, constants
-//AutoSuperclass:       move, terrain mapping
-//AutoSubclass:         actual coords
