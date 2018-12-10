@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import android.support.annotation.NonNull;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -17,7 +18,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 public class Drive {
 	private Telemetry telemetry;
-	private Brickbot robot = Brickbot.getInstance();
+
+	/* Gyro */
+	private ModernRoboticsI2cGyro gyro;
 
 	/* Motors */
 	private DcMotor motorFrontLeft;
@@ -48,10 +51,17 @@ public class Drive {
 	public void init(Telemetry telemetry, HardwareMap hwMap) {
 		this.telemetry = telemetry;
 
+		gyro = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("gyro");
+
 		motorFrontLeft = hwMap.get(DcMotor.class, "motorfl");
 		motorFrontRight = hwMap.get(DcMotor.class, "motorfr");
 		motorBackLeft = hwMap.get(DcMotor.class, "motorbl");
 		motorBackRight = hwMap.get(DcMotor.class, "motorbr");
+
+		telemetry.addData(">", "Calibrating Gyro");
+		telemetry.update();
+
+		gyro.calibrate();
 
 		motorFrontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -63,10 +73,17 @@ public class Drive {
 		motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+		while (gyro.isCalibrating()) {}
+
 		motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+		gyro.resetZAxisIntegrator();
+
+		telemetry.addData(">", "Robot Ready.");
+		telemetry.update();
 	}
 
 	public enum Direction {

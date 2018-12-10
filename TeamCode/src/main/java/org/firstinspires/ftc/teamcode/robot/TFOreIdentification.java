@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -49,7 +50,7 @@ public class TFOreIdentification {
 		VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
 		parameters.vuforiaLicenseKey = VUFORIA_KEY;
-		parameters.cameraDirection = CameraDirection.FRONT;
+		parameters.cameraDirection = CameraDirection.BACK;
 
 		vuforia = ClassFactory.getInstance().createVuforia(parameters);
 	}
@@ -64,8 +65,7 @@ public class TFOreIdentification {
 		TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
 
 		tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-		//tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-		tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_SILVER_MINERAL, LABEL_GOLD_MINERAL);
+		tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
 	}
 
 	public void activate() {
@@ -83,49 +83,45 @@ public class TFOreIdentification {
 		int silver1X = -1;
 		int silver2X = -1;
 
+		CameraDevice.getInstance().setFlashTorchMode(true);
 
-		while (goldX == -1) {
+		while (silver1X == -1) {
 			recognitions = tfod.getUpdatedRecognitions();
 
 			if (recognitions != null) {
 				if (recognitions.size() == 3) {
-
 					for (Recognition recognition : recognitions) {
-						if (goldX == -1 ) {    //recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-							goldX = (int) recognition.getLeft();
+						if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+							goldX = (int) recognition.getRight();
 						} else if (silver1X == -1) {
-							silver1X = (int) recognition.getLeft();
+							silver1X = (int) recognition.getRight();
 						} else {
-							silver2X = (int) recognition.getLeft();
+							silver2X = (int) recognition.getRight();
 						}
 					}
 				}
 			}
 		}
 
-		DistanceUnit unitINCH = DistanceUnit.INCH;
+		CameraDevice.getInstance().setFlashTorchMode(false);
 
-		telemetry.addData("gold", Integer.toString(goldX));
-		telemetry.addData("silver1", Integer.toString(silver1X));
-		telemetry.addData("silver2", Integer.toString(silver2X));
+		telemetry.addData("G: ", Integer.toString(goldX));
+		telemetry.addData("S1: ", Integer.toString(silver1X));
+		telemetry.addData("S2: ", Integer.toString(silver2X));
 		telemetry.update();
-
-		ElapsedTime time = new ElapsedTime();
-		time.reset();
-		while (time.seconds() < 3) {}
-
-		//LEFT
-		if (goldX < silver1X && goldX < silver2X) {
-			telemetry.addData("Gold Ore Position", "Left");
-			telemetry.update();
-			return "LEFT";
-		}
 
 		//RIGHT
 		if (goldX > silver1X && goldX > silver2X) {
 			telemetry.addData("Gold Ore Position", "Right");
 			telemetry.update();
 			return "RIGHT";
+		}
+
+		//LEFT
+		if (goldX < silver1X && goldX < silver2X) {
+			telemetry.addData("Gold Ore Position", "Left");
+			telemetry.update();
+			return "LEFT";
 		}
 
 		//CENTER

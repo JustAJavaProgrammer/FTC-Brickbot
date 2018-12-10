@@ -29,9 +29,11 @@ public class Brickbot {         //TODO: Implement threads
 
 	public      OpenGLMatrix            coords              = null;
 
-	public      Drive                   drive               = new Drive();
-	protected   Drive.Direction         Direction           = null;
-	protected   Drive.Rotation          Rotation            = null;
+	private     Drive                   drive               = new Drive();
+	private     Drive.Direction         Direction           = null;
+	private     Drive.Rotation          Rotation            = null;
+
+	private     Collector               collector           = new Collector();
 
 	protected   DistanceUnit            distanceUnit        = DistanceUnit.CM;
 	protected   AngleUnit               angleUnit           = AngleUnit.DEGREES;
@@ -41,6 +43,7 @@ public class Brickbot {         //TODO: Implement threads
 	/* Initialize */
 	public void init(Telemetry telemetry, HardwareMap hwMap) {
 		drive.init(telemetry, hwMap);
+		//collector.init(telemetry, hwMap);
 		tfID.init(telemetry, hwMap);
 
 		coords = OpenGLMatrix.translation(0, 0, 0)      //TODO: Find robot start position
@@ -49,10 +52,11 @@ public class Brickbot {         //TODO: Implement threads
 
 	public void sampleGoldOre() {
 		tfID.activate();
-
 		String position = tfID.getGoldOrePosition();
+		tfID.shutdown();
 
-
+		//Exit landing zone
+		//drive.move(Direction.RIGHT, DistanceUnit.INCH, );
 
 		switch (position) {
 			case "CENTER":
@@ -65,7 +69,5 @@ public class Brickbot {         //TODO: Implement threads
 
 				break;
 		}
-
-		tfID.shutdown();
 	}
 }
