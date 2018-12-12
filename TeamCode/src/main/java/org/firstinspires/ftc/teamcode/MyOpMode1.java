@@ -7,11 +7,15 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.robot.Collector;
+
 @SuppressWarnings({"ConstantConditions", "unused", "WeakerAccess"})
 
 @TeleOp(name="Brickbot: OpMode (v0.1)", group="Linear Opmode")
 
 public class MyOpMode1 extends OpMode {
+
+	private Collector collector = new Collector();
 	
 	private ElapsedTime runtime = new ElapsedTime();
 	DcMotor motorFrontLeft;
@@ -34,6 +38,8 @@ public class MyOpMode1 extends OpMode {
 		motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorBackLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
+		collector.init(telemetry, hardwareMap);
 	}
 
 	@Override
@@ -43,6 +49,12 @@ public class MyOpMode1 extends OpMode {
 
 	@Override
 	public void loop() {
+		telemetry.setAutoClear(false);
+
+		collector.extendArm(gamepad1.dpad_up, gamepad1.dpad_down);
+		collector.rotateArm(gamepad1.dpad_left, gamepad1.dpad_right);
+		//collector.rotateCollector(gamepad1.a, gamepad1.b);
+
 		leftPower = 0;
 		rightPower = 0;
 
@@ -55,17 +67,28 @@ public class MyOpMode1 extends OpMode {
 			leftPower = Range.clip(drive + turn, -1.0, 1.0);
 			rightPower = Range.clip(drive - turn, -1.0, 1.0);
 
-		} else if(gamepad1.left_stick_x != 0) {
+			motorFrontLeft.setPower(leftPower);
+			motorFrontRight.setPower(rightPower);
+			motorBackLeft.setPower(leftPower);
+			motorBackRight.setPower(rightPower);
 
+		} else if(gamepad1.left_stick_x != 0) {
 			drive = -gamepad1.left_stick_x;
 			leftPower = Range.clip(-drive, -1.0, 1.0);
 			rightPower = Range.clip(drive, -1.0, 1.0);
 
-		}
+			motorFrontLeft.setPower(leftPower);
+			motorFrontRight.setPower(rightPower);
+			motorBackLeft.setPower(leftPower);
+			motorBackRight.setPower(rightPower);
+		} else if(gamepad1.right_stick_x != 0) {
+			drive = gamepad1.right_stick_x;
+			drive = Range.clip(drive, -1.0, 1.0);
 
-		motorFrontLeft.setPower(leftPower);
-		motorFrontRight.setPower(rightPower);
-		motorBackLeft.setPower(leftPower);
-		motorBackRight.setPower(rightPower);
+			motorFrontLeft.setPower(-drive);
+			motorFrontRight.setPower(drive);
+			motorBackLeft.setPower(drive);
+			motorBackRight.setPower(-drive);
+		}
 	}
 }

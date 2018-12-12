@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.robot.Brickbot;
 
@@ -18,17 +16,16 @@ public class AutonomousOpMode extends LinearOpMode {
 
 	@Override
 	public void runOpMode() {
-		telemetry.setAutoClear(false);
+		//telemetry.setAutoClear(false);
 		robot.init(telemetry, hardwareMap);
 
 		waitForStart();
 
 		//Land the robot
 
+		//robot.test();
+
 		robot.sampleGoldOre();
 		sleep(5000);
-
-		while (opModeIsActive()) {
-		}
 	}
 }

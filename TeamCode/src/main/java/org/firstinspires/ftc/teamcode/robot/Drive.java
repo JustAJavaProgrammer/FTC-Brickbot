@@ -33,7 +33,7 @@ public class Drive {
 	private static final double ROBOT_WIDTH   = 13.97637795d;
 	private static final double ROBOT_LENGTH  = 14.17322835d;
 
-	private static final double COUNTS_PER_MOTOR_REV    = 280.0d;       // Modify according to the drive motors
+	private static final double COUNTS_PER_MOTOR_REV    = 1120.0d;       // Modify according to the drive motors
 	private static final double WHEEL_DIAMETER_INCHES   = 4.0d;
 	private static final double DRIVE_GEAR_REDUCTION    = 2.0d;         // Speed reduction
 	private static final double COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
@@ -95,11 +95,6 @@ public class Drive {
 		BACKWARD,
 		LEFT,
 		RIGHT
-	}
-
-	public enum Rotation {
-		CLOCKWISE,
-		COUNTERCLOCKWISE
 	}
 
 	/**
@@ -202,93 +197,18 @@ public class Drive {
 	}
 
 	/**
-	 *  Method to drive on a fixed compass bearing (angle), based on encoder counts.
-	 *  Move will stop if the move gets to the desired position
-	 *
-	 * @param speed      Target speed for forward motion.  Should allow for _/- variance for adjusting heading
-	 * @param distance   Distance (in inches) to move from current position.  Negative distance means move backwards.
-	 * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
-	 *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-	 *                   If a relative angle is required, add/subtract from current heading.
-	 */
-	public void gyroDrive (Direction direction, DistanceUnit unit, double distance) {
-		double  max;
-		double  error;
-		double  steer;
-		double  leftSpeed;
-		double  rightSpeed;
-
-		distance = Math.abs(distance);
-		int modifier = (int)(unit.toInches(distance) * COUNTS_PER_INCH);
-
-		switch (direction) {
-			default:
-			case FORWARD:
-				modifyTargetPosition(modifier, modifier, modifier, modifier);
-				break;
-			case BACKWARD:
-				modifyTargetPosition(-modifier, -modifier, -modifier, -modifier);
-				break;
-			case LEFT:
-				modifyTargetPosition(modifier, -modifier, -modifier, modifier);
-				break;
-			case RIGHT:
-				modifyTargetPosition(-modifier, modifier, modifier, -modifier);
-				break;
-		}
-
-		startMotors();
-/*
-		while (isBusy()) {
-
-			// adjust relative speed based on heading error.
-			error = getError(angle);
-			steer = getSteer(error, P_DRIVE_COEFF);
-
-			// if driving in reverse, the motor correction also needs to be reversed
-			if (distance < 0)
-				steer *= -1.0;
-
-			leftSpeed = speed - steer;
-			rightSpeed = speed + steer;
-
-			// Normalize speeds if either one exceeds +/- 1.0;
-			max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-			if (max > 1.0)
-			{
-				leftSpeed /= max;
-				rightSpeed /= max;
-			}
-
-			robot.leftDrive.setPower(leftSpeed);
-			robot.rightDrive.setPower(rightSpeed);
-
-			// Display drive status for the driver.
-			telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);
-			telemetry.addData("Target",  "%7d:%7d",      newLeftTarget,  newRightTarget);
-			telemetry.addData("Actual",  "%7d:%7d",      robot.leftDrive.getCurrentPosition(),
-					robot.rightDrive.getCurrentPosition());
-			telemetry.addData("Speed",   "%5.2f:%5.2f",  leftSpeed, rightSpeed);
-			telemetry.update();
-		}
-
-		// Stop all motion;
-		robot.leftDrive.setPower(0);
-		robot.rightDrive.setPower(0);
-
-		// Turn off RUN_TO_POSITION
-		robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-*/
-	}
-
-	/**
 	 * The robot starts moving
 	 * @param direction One of 4 cardinal directions in which the robot starts moving
 	 * @param unit The unit of measure for the specified distance
 	 * @param distance The distance the robot will move
 	 */
-	public void move(Direction direction, DistanceUnit unit, double distance) {
+	public void move (Direction direction, DistanceUnit unit, double distance) {
+		double angle = gyro.getIntegratedZValue();
+		double error;
+		double steer;
+		double speed1;
+		double speed2;
+
 		distance = Math.abs(distance);
 		int modifier = (int)(unit.toInches(distance) * COUNTS_PER_INCH);
 
@@ -301,17 +221,51 @@ public class Drive {
 				modifyTargetPosition(-modifier, -modifier, -modifier, -modifier);
 				break;
 			case LEFT:
-				modifyTargetPosition(modifier, -modifier, -modifier, modifier);
+				modifyTargetPosition(-modifier, modifier, modifier, -modifier);
 				break;
 			case RIGHT:
-				modifyTargetPosition(-modifier, modifier, modifier, -modifier);
+				modifyTargetPosition(modifier, -modifier, -modifier, modifier);
 				break;
 		}
 
 		startMotors();
-		while (isBusy()) {}
+
+		while (isBusy()) {
+			error = getError(angle);
+
+			if (error < HEADING_THRESHOLD)
+				error = 0;
+
+			steer = getSteer(error, P_DRIVE_COEFF);
+
+			speed1 = DRIVE_SPEED - steer;
+			speed2 = DRIVE_SPEED + steer;
+
+			double max = Math.max(Math.abs(speed1), Math.abs(speed2));
+			if (max > 1.0)
+			{
+				speed1 /= max;
+				speed2 /= max;
+			}
+
+			switch (direction) {
+				default:
+				case FORWARD:
+					setPower(speed1, speed2, speed1, speed2);
+					break;
+				case BACKWARD:
+					setPower(speed2, speed1, speed2, speed1);
+					break;
+				case LEFT:
+					setPower(speed2, speed2, speed1, speed1);
+					break;
+				case RIGHT:
+					setPower(speed1, speed1, speed2, speed2);
+					break;
+			}
+		}
+
 		stopMotors();
-		resetTargetPosition();
 	}
 
 	/**
@@ -320,27 +274,19 @@ public class Drive {
 	 * @param unit The unit of measure for the specified angle
 	 * @param angle The amount the robot will rotate
 	 */
-	public void rotate(Rotation rotation, AngleUnit unit, double angle) {
+	public void rotate(AngleUnit unit, double angle) {
 		angle = unit.normalize(angle);
 		angle = unit.toDegrees(angle);
+		angle += gyro.getIntegratedZValue();
 
-		int modifier = (int) (unit.toRadians(angle)
-						* Math.sqrt(ROBOT_LENGTH * ROBOT_LENGTH + ROBOT_WIDTH * ROBOT_WIDTH) * COUNTS_PER_INCH / 2);
+		double error = getError(angle);
 
-		switch (rotation) {
-			default:
-			case CLOCKWISE:
-				modifyTargetPosition(modifier, -modifier, modifier, -modifier);
-				break;
-			case COUNTERCLOCKWISE:
-				modifyTargetPosition(-modifier, modifier, -modifier, modifier);
-				break;
+		while (error < HEADING_THRESHOLD) {
+			double power = TURN_SPEED * Math.signum(error);
+			setPower(-power, power, -power, power);
 		}
 
-		startMotors();
-		while (isBusy()) {}
 		stopMotors();
-		resetTargetPosition();
 	}
 
 	/**

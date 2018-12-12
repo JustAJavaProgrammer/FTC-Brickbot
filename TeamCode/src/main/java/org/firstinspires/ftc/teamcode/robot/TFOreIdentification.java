@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -17,6 +16,8 @@ import java.util.List;
 @SuppressWarnings("All")
 public class TFOreIdentification {
 	private Telemetry telemetry;
+
+	private Servo servoWall;
 
 	private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
 	private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -30,6 +31,9 @@ public class TFOreIdentification {
 	/* Initialize */
 	public void init(Telemetry telemetry, HardwareMap hwMap) {
 		this.telemetry = telemetry;
+
+		servoWall = hwMap.servo.get("servowall");
+		servoWall.setDirection(Servo.Direction.REVERSE);
 
 		initVuforia();
 
@@ -76,6 +80,14 @@ public class TFOreIdentification {
 		tfod.shutdown();
 	}
 
+	public void dropWall() {
+		servoWall.setPosition(0.5);
+	}
+
+	public void raiseWall() {
+		servoWall.setPosition(0);
+	}
+
 	public String getGoldOrePosition() {
 		List<Recognition> recognitions = null;
 
@@ -89,7 +101,7 @@ public class TFOreIdentification {
 			recognitions = tfod.getUpdatedRecognitions();
 
 			if (recognitions != null) {
-				if (recognitions.size() == 3) {
+				if (recognitions.size() == 2) {
 					for (Recognition recognition : recognitions) {
 						if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
 							goldX = (int) recognition.getRight();
@@ -110,18 +122,18 @@ public class TFOreIdentification {
 		telemetry.addData("S2: ", Integer.toString(silver2X));
 		telemetry.update();
 
-		//RIGHT
-		if (goldX > silver1X && goldX > silver2X) {
-			telemetry.addData("Gold Ore Position", "Right");
-			telemetry.update();
-			return "RIGHT";
-		}
-
 		//LEFT
-		if (goldX < silver1X && goldX < silver2X) {
+		if (goldX == -1) {
 			telemetry.addData("Gold Ore Position", "Left");
 			telemetry.update();
 			return "LEFT";
+		}
+
+		//RIGHT
+		if (goldX > silver1X) {
+			telemetry.addData("Gold Ore Position", "Right");
+			telemetry.update();
+			return "RIGHT";
 		}
 
 		//CENTER
