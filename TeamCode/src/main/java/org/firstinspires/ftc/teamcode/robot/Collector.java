@@ -14,15 +14,21 @@ public class Collector {
 	private static final double ROTATION_GEAR_REDUCTION = 3.0d;
 
 	public void rotateArm(boolean btnOpen, boolean btnClose) {
-		if(btnOpen)
+		if(btnOpen) {
 			robot.motorRotation.setPower(ROTATION_SPEED);
-		else if(btnClose)
+			double servoPosition = Range.scale(robot.motorRotation.getCurrentPosition(), 0, 2100, 0, 0.7);
+			robot.servoBox.setPosition(servoPosition);
+		}
+		else if(btnClose) {
 			robot.motorRotation.setPower(-ROTATION_SPEED);
+			double servoPosition = Range.scale(robot.motorRotation.getCurrentPosition(), 0, 2100, 0, 0.7);
+			robot.servoBox.setPosition(servoPosition);
+		}
 		else
 			robot.motorRotation.setPower(0);
 
-		double servoPosition = Range.scale(robot.motorRotation.getCurrentPosition(), 0, 2400, 0, 1);
-		robot.servoBox.setPosition(servoPosition);
+//		double servoPosition = Range.scale(robot.motorRotation.getCurrentPosition(), 0, 2100, 0, 1);
+//		robot.servoBox.setPosition(servoPosition);
 
 		robot.telemetry.addData("Rotation", Integer.toString(robot.motorRotation.getCurrentPosition()));
 		robot.telemetry.update();
@@ -49,10 +55,18 @@ public class Collector {
 			robot.crServo.setPower(0);
 	}
 
+	double boxPosition = 0;
+
 	public void rotateBox(boolean btnOpen, boolean btnClose) {
-		if(btnOpen)
-			robot.servoBox.setPosition(1);
-		else if(btnClose)
-			robot.servoBox.setPosition(0);
+		if(btnOpen) {
+			boxPosition = Range.clip(boxPosition, 0, 0.7);
+			robot.servoBox.setPosition(boxPosition);
+			boxPosition += 0.05;
+		}
+		else if(btnClose) {
+			boxPosition = Range.clip(boxPosition, 0, 0.7);
+			robot.servoBox.setPosition(boxPosition);
+			boxPosition -= 0.05;
+		}
 	}
 }

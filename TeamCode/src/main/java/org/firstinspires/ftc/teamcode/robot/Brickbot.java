@@ -82,7 +82,7 @@ public class Brickbot {         //TODO: Implement threads
 		telemetry.addData(">", "Calibrating Gyro");
 		telemetry.update();
 
-		gyro.calibrate();
+		//gyro.calibrate();
 
 		motorFrontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -102,7 +102,7 @@ public class Brickbot {         //TODO: Implement threads
 		motorRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		motorExtension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-		while (gyro.isCalibrating()) {}
+		//while (gyro.isCalibrating()) {}
 
 		motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -111,15 +111,17 @@ public class Brickbot {         //TODO: Implement threads
 		motorRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		motorExtension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-		gyro.resetZAxisIntegrator();
+		servoWall.setPosition(0);
 
-		telemetry.addData(">", "Robot Ready.");
-		telemetry.update();
+		//gyro.resetZAxisIntegrator();
 
 		tfID.init(hwMap);
-
+/*
 		coords = OpenGLMatrix.translation(0, 0, 0)      //TODO: Find robot start position
 				.multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES, 0, 0, 45));
+*/
+		telemetry.addData(">", "Robot Ready.");
+		telemetry.update();
 	}
 
 	public void sampleGoldOre() {
@@ -146,6 +148,6 @@ public class Brickbot {         //TODO: Implement threads
 	}
 
 	public void test() {
-
+		telemetry.clear();
 	}
 }
