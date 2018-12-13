@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -18,16 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Class responsible with controlling the drive train
  */
 public class Drive {
-	private Telemetry telemetry;
-
-	/* Gyro */
-	private ModernRoboticsI2cGyro gyro;
-
-	/* Motors */
-	private DcMotor motorFrontLeft;
-	private DcMotor motorFrontRight;
-	private DcMotor motorBackLeft;
-	private DcMotor motorBackRight;
+	private Brickbot robot = Brickbot.getInstance();
 
 	/* Constants */
 	private static final double ROBOT_WIDTH   = 13.97637795d;
@@ -51,45 +43,6 @@ public class Drive {
 			throw new ArithmeticException();
 	}
 
-	/* Initialize */
-	public void init(Telemetry telemetry, HardwareMap hwMap) {
-		this.telemetry = telemetry;
-
-		gyro = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("gyro");
-
-		motorFrontLeft = hwMap.get(DcMotor.class, "motorfl");
-		motorFrontRight = hwMap.get(DcMotor.class, "motorfr");
-		motorBackLeft = hwMap.get(DcMotor.class, "motorbl");
-		motorBackRight = hwMap.get(DcMotor.class, "motorbr");
-
-		telemetry.addData(">", "Calibrating Gyro");
-		telemetry.update();
-
-		gyro.calibrate();
-
-		motorFrontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-		motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-		motorBackLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-		motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
-		motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-		while (gyro.isCalibrating()) {}
-
-		motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-		gyro.resetZAxisIntegrator();
-
-		telemetry.addData(">", "Robot Ready.");
-		telemetry.update();
-	}
-
 	public enum Direction {
 		FORWARD,
 		BACKWARD,
@@ -108,10 +61,10 @@ public class Drive {
 	 */
 	private void setPower(@NonNull double... args) {
 		if (args.length == 4) {
-			motorFrontLeft.setPower(args[0]);
-			motorFrontRight.setPower(args[1]);
-			motorBackLeft.setPower(args[2]);
-			motorBackRight.setPower(args[3]);
+			robot.motorFrontLeft.setPower(args[0]);
+			robot.motorFrontRight.setPower(args[1]);
+			robot.motorBackLeft.setPower(args[2]);
+			robot.motorBackRight.setPower(args[3]);
 		}
 		else {
 			throw new ArrayIndexOutOfBoundsException();
@@ -128,10 +81,10 @@ public class Drive {
 	 */
 	private void modifyTargetPosition(@NonNull int... args) {
 		if (args.length == 4) {
-			motorFrontLeft.setTargetPosition(motorFrontLeft.getCurrentPosition() + args[0]);
-			motorFrontRight.setTargetPosition(motorFrontRight.getCurrentPosition() + args[1]);
-			motorBackLeft.setTargetPosition(motorBackLeft.getCurrentPosition() + args[2]);
-			motorBackRight.setTargetPosition(motorBackRight.getCurrentPosition() + args[3]);
+			robot.motorFrontLeft.setTargetPosition(robot.motorFrontLeft.getCurrentPosition() + args[0]);
+			robot.motorFrontRight.setTargetPosition(robot.motorFrontRight.getCurrentPosition() + args[1]);
+			robot.motorBackLeft.setTargetPosition(robot.motorBackLeft.getCurrentPosition() + args[2]);
+			robot.motorBackRight.setTargetPosition(robot.motorBackRight.getCurrentPosition() + args[3]);
 		}
 		else {
 			throw new ArrayIndexOutOfBoundsException();
@@ -139,27 +92,27 @@ public class Drive {
 	}
 
 	private void resetTargetPosition() {
-		motorFrontLeft.setTargetPosition(motorFrontLeft.getCurrentPosition());
-		motorFrontRight.setTargetPosition(motorFrontRight.getCurrentPosition());
-		motorBackLeft.setTargetPosition(motorBackLeft.getCurrentPosition());
-		motorBackRight.setTargetPosition(motorBackRight.getCurrentPosition());
+		robot.motorFrontLeft.setTargetPosition(robot.motorFrontLeft.getCurrentPosition());
+		robot.motorFrontRight.setTargetPosition(robot.motorFrontRight.getCurrentPosition());
+		robot.motorBackLeft.setTargetPosition(robot.motorBackLeft.getCurrentPosition());
+		robot.motorBackRight.setTargetPosition(robot.motorBackRight.getCurrentPosition());
 	}
 
 	private boolean isBusy() {
-		return motorFrontLeft.isBusy() &&
-				motorFrontRight.isBusy() &&
-				motorBackLeft.isBusy() &&
-				motorBackRight.isBusy();
+		return robot.motorFrontLeft.isBusy() &&
+				robot.motorFrontRight.isBusy() &&
+				robot.motorBackLeft.isBusy() &&
+				robot.motorBackRight.isBusy();
 	}
 
 	/**
 	 * Sets the power of the drive train motors to max
 	 */
 	private void startMotors() {
-		motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		robot.motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		robot.motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		robot.motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		robot.motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 		setPower(DRIVE_SPEED, DRIVE_SPEED, DRIVE_SPEED, DRIVE_SPEED);
 	}
@@ -170,10 +123,10 @@ public class Drive {
 	private void stopMotors() {
 		setPower(0, 0, 0, 0);
 
-		motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		robot.motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		robot.motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		robot.motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		robot.motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 	}
 
 	/**
@@ -183,7 +136,7 @@ public class Drive {
 	 */
 	private double getError(double targetAngle) {
 		double error;
-		error = targetAngle - gyro.getIntegratedZValue();
+		error = targetAngle - robot.gyro.getIntegratedZValue();
 		return AngleUnit.normalizeDegrees(error);
 	}
 
@@ -203,7 +156,7 @@ public class Drive {
 	 * @param distance The distance the robot will move
 	 */
 	public void move (Direction direction, DistanceUnit unit, double distance) {
-		double angle = gyro.getIntegratedZValue();
+		double angle = robot.gyro.getIntegratedZValue();
 		double error;
 		double steer;
 		double speed1;
@@ -277,7 +230,7 @@ public class Drive {
 	public void rotate(AngleUnit unit, double angle) {
 		angle = unit.normalize(angle);
 		angle = unit.toDegrees(angle);
-		angle += gyro.getIntegratedZValue();
+		angle += robot.gyro.getIntegratedZValue();
 
 		double error = getError(angle);
 
@@ -295,5 +248,45 @@ public class Drive {
 	public void stop() {
 		stopMotors();
 		resetTargetPosition();
+	}
+
+	/* TeleOp Functions */
+	/**
+	 * Normalises and sets the power to the drive train motors.
+	 * @param args 4 doubles corresponding to the powers of:
+	 * 		       <p>1. Front Left Motor</p>
+	 * 		       <p>2. Front Right Motor</p>
+	 * 		       <p>3. Back Left Motor</p>
+	 * 		       <p>4. Back Right Motor</p>
+	 * @param args
+	 */
+	private void setNormalisedPower(@NonNull double... args) {
+		if (args.length == 4) {
+			double max = -1;
+
+			for (double arg : args)
+				max = Math.max(max, Math.abs(arg));
+
+			if (max > 1)
+				for (int i = 0; i < 4; i++)
+					args[i] /= max;
+
+			setPower(args);
+		}
+		else {
+			throw new ArrayIndexOutOfBoundsException();
+		}
+	}
+
+	/**
+	 * Commands the drive train
+	 * @param gamepad The gamepad responsible for moving the drive train
+	 */
+	public void teleDrive(Gamepad gamepad) {
+		double x = gamepad.right_stick_x;
+		double y = -gamepad.right_stick_y;
+		double r = gamepad.left_stick_x;
+
+		setNormalisedPower(x + y + r, -x + y - r, -x + y + r, x + y - r);
 	}
 }

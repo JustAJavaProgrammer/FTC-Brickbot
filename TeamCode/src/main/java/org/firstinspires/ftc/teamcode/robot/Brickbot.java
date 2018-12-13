@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -20,6 +25,24 @@ public class Brickbot {         //TODO: Implement threads
 	public static Brickbot getInstance() {
 		return robot;
 	}
+
+	public Telemetry telemetry;
+
+	/* Gyro */
+	public ModernRoboticsI2cGyro gyro;
+
+	/* Motors */
+	public DcMotor motorFrontLeft;
+	public DcMotor motorFrontRight;
+	public DcMotor motorBackLeft;
+	public DcMotor motorBackRight;
+	public DcMotor motorRotation;
+	public DcMotor motorExtension;
+
+	/* Servos */
+	public CRServo crServo;
+	public Servo servoWall;
+	public Servo servoBox;
 
 	/* Members */
 	//TODO: Verify ore coords
@@ -41,8 +64,59 @@ public class Brickbot {         //TODO: Implement threads
 
 	/* Initialize */
 	public void init(Telemetry telemetry, HardwareMap hwMap) {
-		drive.init(telemetry, hwMap);
-		tfID.init(telemetry, hwMap);
+		this.telemetry = telemetry;
+
+		gyro = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("gyro");
+
+		motorFrontLeft = hwMap.get(DcMotor.class, "motorfl");
+		motorFrontRight = hwMap.get(DcMotor.class, "motorfr");
+		motorBackLeft = hwMap.get(DcMotor.class, "motorbl");
+		motorBackRight = hwMap.get(DcMotor.class, "motorbr");
+		motorRotation = hwMap.get(DcMotor.class, "motorRotation");
+		motorExtension = hwMap.get(DcMotor.class, "motorExtension");
+
+		servoBox = hwMap.servo.get("servobox");
+		servoWall = hwMap.servo.get("servowall");
+		crServo = hwMap.crservo.get("crservo");
+
+		telemetry.addData(">", "Calibrating Gyro");
+		telemetry.update();
+
+		gyro.calibrate();
+
+		motorFrontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+		motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+		motorBackLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+		motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+		motorRotation.setDirection(DcMotorSimple.Direction.REVERSE);
+		motorExtension.setDirection(DcMotorSimple.Direction.FORWARD);
+
+		crServo.setDirection(CRServo.Direction.REVERSE);
+		servoWall.setDirection(Servo.Direction.REVERSE);
+		servoBox.setDirection(Servo.Direction.REVERSE);
+
+		motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		motorRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		motorExtension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+		while (gyro.isCalibrating()) {}
+
+		motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorExtension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+		gyro.resetZAxisIntegrator();
+
+		telemetry.addData(">", "Robot Ready.");
+		telemetry.update();
+
+		tfID.init(hwMap);
 
 		coords = OpenGLMatrix.translation(0, 0, 0)      //TODO: Find robot start position
 				.multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES, 0, 0, 45));

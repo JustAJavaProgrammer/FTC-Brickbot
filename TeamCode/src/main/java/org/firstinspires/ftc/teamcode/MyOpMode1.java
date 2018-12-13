@@ -2,44 +2,27 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.robot.Brickbot;
 import org.firstinspires.ftc.teamcode.robot.Collector;
+import org.firstinspires.ftc.teamcode.robot.Drive;
 
-@SuppressWarnings({"ConstantConditions", "unused", "WeakerAccess"})
-
+@SuppressWarnings("All")
 @TeleOp(name="Brickbot: OpMode (v0.1)", group="Linear Opmode")
 
 public class MyOpMode1 extends OpMode {
 
+	private Brickbot robot = Brickbot.getInstance();
+	private Drive drive = new Drive();
 	private Collector collector = new Collector();
 	
 	private ElapsedTime runtime = new ElapsedTime();
-	DcMotor motorFrontLeft;
-	DcMotor motorFrontRight;
-	DcMotor motorBackLeft;
-	DcMotor motorBackRight;
-	double drive = 0,
-		turn = 0,
-		leftPower = 0,
-		rightPower = 0;
 
 	@Override
 	public void init() {
-		motorFrontLeft = hardwareMap.get(DcMotor.class, "motorfl");
-		motorFrontRight = hardwareMap.get(DcMotor.class, "motorfr");
-		motorBackLeft = hardwareMap.get(DcMotor.class, "motorbl");
-		motorBackRight = hardwareMap.get(DcMotor.class, "motorbr");
-
-		motorFrontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-		motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-		motorBackLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-		motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
-		collector.init(telemetry, hardwareMap);
+		telemetry.setAutoClear(false);
+		robot.init(telemetry, hardwareMap);
 	}
 
 	@Override
@@ -49,46 +32,11 @@ public class MyOpMode1 extends OpMode {
 
 	@Override
 	public void loop() {
-		telemetry.setAutoClear(false);
+		drive.teleDrive(gamepad1);
 
-		collector.extendArm(gamepad1.dpad_up, gamepad1.dpad_down);
-		collector.rotateArm(gamepad1.dpad_left, gamepad1.dpad_right);
-		//collector.rotateCollector(gamepad1.a, gamepad1.b);
-
-		leftPower = 0;
-		rightPower = 0;
-
-		if(gamepad1.left_stick_y != 0) {
-
-			drive = -gamepad1.left_stick_y;
-			if(gamepad1.left_stick_y < 0)
-				turn = gamepad1.right_stick_x;
-			else turn = -gamepad1.right_stick_x;
-			leftPower = Range.clip(drive + turn, -1.0, 1.0);
-			rightPower = Range.clip(drive - turn, -1.0, 1.0);
-
-			motorFrontLeft.setPower(leftPower);
-			motorFrontRight.setPower(rightPower);
-			motorBackLeft.setPower(leftPower);
-			motorBackRight.setPower(rightPower);
-
-		} else if(gamepad1.left_stick_x != 0) {
-			drive = -gamepad1.left_stick_x;
-			leftPower = Range.clip(-drive, -1.0, 1.0);
-			rightPower = Range.clip(drive, -1.0, 1.0);
-
-			motorFrontLeft.setPower(leftPower);
-			motorFrontRight.setPower(rightPower);
-			motorBackLeft.setPower(leftPower);
-			motorBackRight.setPower(rightPower);
-		} else if(gamepad1.right_stick_x != 0) {
-			drive = gamepad1.right_stick_x;
-			drive = Range.clip(drive, -1.0, 1.0);
-
-			motorFrontLeft.setPower(-drive);
-			motorFrontRight.setPower(drive);
-			motorBackLeft.setPower(drive);
-			motorBackRight.setPower(-drive);
-		}
+		collector.extendArm(gamepad2.left_stick_y < 0, gamepad2.left_stick_y > 0);
+		collector.rotateArm(gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0);
+		collector.rotateCollector(gamepad2.a, gamepad2.b);
+		//collector.rotateBox(gamepad2.a, gamepad2.b);
 	}
 }

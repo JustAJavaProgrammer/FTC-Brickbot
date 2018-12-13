@@ -15,9 +15,7 @@ import java.util.List;
 
 @SuppressWarnings("All")
 public class TFOreIdentification {
-	private Telemetry telemetry;
-
-	private Servo servoWall;
+	private Brickbot robot = Brickbot.getInstance();
 
 	private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
 	private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -29,19 +27,14 @@ public class TFOreIdentification {
 	private TFObjectDetector tfod;
 
 	/* Initialize */
-	public void init(Telemetry telemetry, HardwareMap hwMap) {
-		this.telemetry = telemetry;
-
-		servoWall = hwMap.servo.get("servowall");
-		servoWall.setDirection(Servo.Direction.REVERSE);
-
+	public void init(HardwareMap hwMap) {
 		initVuforia();
 
 		if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
 			initTfod(hwMap);
 		} else {
-			telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-			telemetry.update();
+			robot.telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+			robot.telemetry.update();
 
 			throw new NullPointerException();
 		}
@@ -81,11 +74,11 @@ public class TFOreIdentification {
 	}
 
 	public void dropWall() {
-		servoWall.setPosition(0.5);
+		robot.servoWall.setPosition(0.5);
 	}
 
 	public void raiseWall() {
-		servoWall.setPosition(0);
+		robot.servoWall.setPosition(0);
 	}
 
 	public String getGoldOrePosition() {
@@ -117,28 +110,28 @@ public class TFOreIdentification {
 
 		CameraDevice.getInstance().setFlashTorchMode(false);
 
-		telemetry.addData("G: ", Integer.toString(goldX));
-		telemetry.addData("S1: ", Integer.toString(silver1X));
-		telemetry.addData("S2: ", Integer.toString(silver2X));
-		telemetry.update();
+		robot.telemetry.addData("G: ", Integer.toString(goldX));
+		robot.telemetry.addData("S1: ", Integer.toString(silver1X));
+		robot.telemetry.addData("S2: ", Integer.toString(silver2X));
+		robot.telemetry.update();
 
 		//LEFT
 		if (goldX == -1) {
-			telemetry.addData("Gold Ore Position", "Left");
-			telemetry.update();
+			robot.telemetry.addData("Gold Ore Position", "Left");
+			robot.telemetry.update();
 			return "LEFT";
 		}
 
 		//RIGHT
 		if (goldX > silver1X) {
-			telemetry.addData("Gold Ore Position", "Right");
-			telemetry.update();
+			robot.telemetry.addData("Gold Ore Position", "Right");
+			robot.telemetry.update();
 			return "RIGHT";
 		}
 
 		//CENTER
-		telemetry.addData("Gold Ore Position", "Center");
-		telemetry.update();
+		robot.telemetry.addData("Gold Ore Position", "Center");
+		robot.telemetry.update();
 		return "CENTER";
 	}
 }
