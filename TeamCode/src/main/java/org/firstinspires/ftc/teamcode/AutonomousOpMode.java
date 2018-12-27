@@ -17,7 +17,7 @@ public class AutonomousOpMode extends LinearOpMode {
 	@Override
 	public void runOpMode() {
 		//telemetry.setAutoClear(false);
-		robot.init(telemetry, hardwareMap);
+		robot.initHardware(telemetry, hardwareMap);
 
 		waitForStart();
 

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robot.Brickbot;
@@ -23,7 +22,7 @@ public class MyOpMode1 extends OpMode {
 	@Override
 	public void init() {
 		telemetry.setAutoClear(false);
-		robot.init(telemetry, hardwareMap);
+		robot.initHardware(telemetry, hardwareMap);
 	}
 
 	@Override

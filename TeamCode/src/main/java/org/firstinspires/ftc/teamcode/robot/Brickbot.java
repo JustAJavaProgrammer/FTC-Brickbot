@@ -10,10 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @SuppressWarnings("All")
 public class Brickbot {         //TODO: Implement threads
@@ -63,7 +60,7 @@ public class Brickbot {         //TODO: Implement threads
 	public      TFOreIdentification     tfID                = new TFOreIdentification();
 
 	/* Initialize */
-	public void init(Telemetry telemetry, HardwareMap hwMap) {
+	public void initHardware(Telemetry telemetry, HardwareMap hwMap) {
 		this.telemetry = telemetry;
 
 		gyro = (ModernRoboticsI2cGyro) hwMap.gyroSensor.get("gyro");
@@ -115,13 +112,18 @@ public class Brickbot {         //TODO: Implement threads
 
 		//gyro.resetZAxisIntegrator();
 
+
+		telemetry.addData(">", "Robot Ready.");
+		telemetry.update();
+	}
+
+	public void initAutonomous(HardwareMap hwMap) {
 		tfID.init(hwMap);
+
 /*
 		coords = OpenGLMatrix.translation(0, 0, 0)      //TODO: Find robot start position
 				.multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES, 0, 0, 45));
 */
-		telemetry.addData(">", "Robot Ready.");
-		telemetry.update();
 	}
 
 	public void sampleGoldOre() {
