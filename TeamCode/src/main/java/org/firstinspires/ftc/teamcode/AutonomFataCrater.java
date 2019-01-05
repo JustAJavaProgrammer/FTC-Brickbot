@@ -159,14 +159,14 @@ public class  AutonomFataCrater extends LinearOpMode {
                         mergeDrept(Direction.LEFT, 30, 1);
 
                         rotate(18, 1);
-                        mergeDrept(Direction.BACKWARD, 120, 1);
+                        //mergeDrept(Direction.BACKWARD, 160, 1);
 
                         a = 1;
                         break;
                     case "CENTER":
                         dropWall();
                         mergeDrept(Direction.BACKWARD, 5, 1);
-                        mergeDrept(Direction.RIGHT, 50, 1);
+                        mergeDrept(Direction.RIGHT, 45, 1);
                         mergeDrept(Direction.LEFT, 45, 1);
                         raiseWall();
                         break;
@@ -179,7 +179,7 @@ public class  AutonomFataCrater extends LinearOpMode {
                 }
 
                 if(a == 0) {
-                    mergeDrept(Direction.FORWARD, 116, 1);
+                    mergeDrept(Direction.FORWARD, 111, 1);
                     //sleep(1000);
                     rotate(40, 1);
 
@@ -206,7 +206,7 @@ public class  AutonomFataCrater extends LinearOpMode {
                     mergeDrept(Direction.LEFT, 30, 1);
 
                     rotate(16, 1);
-                    mergeDrept(Direction.BACKWARD, 200, 1);
+                    //mergeDrept(Direction.BACKWARD, 160, 1);
                 }
 
             }

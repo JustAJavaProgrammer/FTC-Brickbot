@@ -157,7 +157,7 @@ public class AutonomFataBaza extends LinearOpMode {
                             mergeDrept(Direction.BACKWARD, 5, 1);
                             mergeDrept(Direction.RIGHT, 120, 1);
                             //mergeDrept(Direction.LEFT, 20, 1);
-                            mergeDrept(Direction.FORWARD, 40, 1);
+                            mergeDrept(Direction.FORWARD, 45, 1);
 
                             rotate(-135,1);
                             raiseWall();
