@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.util.Range;
 
 @SuppressWarnings("All")
+
 public class Collector {
 	private Brickbot robot = Brickbot.getInstance();
 

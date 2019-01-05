@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+//import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+//import com.qualcomm.robotcore.hardware.CRServo;
+//import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+//import com.qualcomm.robotcore.hardware.Servo;
 import com.vuforia.CameraDevice;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
@@ -12,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 @SuppressWarnings("All")
+
 public class TFOreIdentification {
 	private Brickbot robot = Brickbot.getInstance();
 
@@ -24,9 +28,11 @@ public class TFOreIdentification {
 	private VuforiaLocalizer vuforia;
 	private TFObjectDetector tfod;
 
+
 	/* Initialize */
 	public void init(HardwareMap hwMap) {
 		initVuforia();
+
 
 		if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
 			initTfod(hwMap);
@@ -71,11 +77,11 @@ public class TFOreIdentification {
 		tfod.shutdown();
 	}
 
-	public void dropWall() {
+	public void dropWall() throws NullPointerException {
 		robot.servoWall.setPosition(0.5);
 	}
 
-	public void raiseWall() {
+	public void raiseWall() throws NullPointerException {
 		robot.servoWall.setPosition(0);
 	}
 
@@ -108,28 +114,28 @@ public class TFOreIdentification {
 
 		CameraDevice.getInstance().setFlashTorchMode(false);
 
-		robot.telemetry.addData("G: ", Integer.toString(goldX));
-		robot.telemetry.addData("S1: ", Integer.toString(silver1X));
-		robot.telemetry.addData("S2: ", Integer.toString(silver2X));
-		robot.telemetry.update();
+		//robot.telemetry.addData("G: ", Integer.toString(goldX));
+		//robot.telemetry.addData("S1: ", Integer.toString(silver1X));
+		//robot.telemetry.addData("S2: ", Integer.toString(silver2X));
+		//robot.telemetry.update();
 
 		//LEFT
 		if (goldX == -1) {
-			robot.telemetry.addData("Gold Ore Position", "Left");
-			robot.telemetry.update();
+			//robot.telemetry.addData("Gold Ore Position", "Left");
+			//robot.telemetry.update();
 			return "LEFT";
 		}
 
 		//RIGHT
 		if (goldX > silver1X) {
-			robot.telemetry.addData("Gold Ore Position", "Right");
-			robot.telemetry.update();
+			//robot.telemetry.addData("Gold Ore Position", "Right");
+			//robot.telemetry.update();
 			return "RIGHT";
 		}
 
 		//CENTER
-		robot.telemetry.addData("Gold Ore Position", "Center");
-		robot.telemetry.update();
+		//robot.telemetry.addData("Gold Ore Position", "Center");
+		//robot.telemetry.update();
 		return "CENTER";
 	}
 }

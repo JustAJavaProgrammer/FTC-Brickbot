@@ -123,6 +123,11 @@ public class Drive {
 		robot.motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		robot.motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		robot.motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+		robot.motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		robot.motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		robot.motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		robot.motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 	}
 
 	/**
@@ -245,8 +250,6 @@ public class Drive {
 		stopMotors();
 		resetTargetPosition();
 	}
-
-
 
 	/* TeleOp Functions */
 	/**
