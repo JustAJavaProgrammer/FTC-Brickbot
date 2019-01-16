@@ -130,6 +130,8 @@ public class AutonomFataBaza extends LinearOpMode {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
 
+                    //TODO: LIFT GOES HERE
+
                     String position = getGoldOrePosition();
 
                     positionSave = position;
@@ -143,6 +145,8 @@ public class AutonomFataBaza extends LinearOpMode {
                             mergeDrept(Direction.RIGHT, 40,1);
                             rotate(-135, 1);
                             mergeDrept(Direction.LEFT, 40,1);
+                            mergeDrept(Direction.FORWARD, 40, 1);
+
                             raiseWall();
                             deployBrick(1500,Direction.FORWARD);
                             robot.servoBox.setPosition(0.1);
@@ -154,8 +158,8 @@ public class AutonomFataBaza extends LinearOpMode {
                             break;
                         case "CENTER":
                             dropWall();
-                            mergeDrept(Direction.BACKWARD, 5, 1);
-                            mergeDrept(Direction.RIGHT, 120, 1);
+                            //mergeDrept(Direction.BACKWARD, 5, 1);
+                            mergeDrept(Direction.RIGHT, 80, 1);
                             //mergeDrept(Direction.LEFT, 20, 1);
                             mergeDrept(Direction.FORWARD, 45, 1);
 

@@ -35,6 +35,8 @@ public class MyOpMode1 extends OpMode {
 	public void loop() {
 		drive.teleDrive(gamepad1);
 
+		//TODO: LIFT 
+
 		collector.extendArm(gamepad2.left_stick_y < 0, gamepad2.left_stick_y > 0);
 		collector.rotateArm(gamepad2.right_stick_y > 0, gamepad2.right_stick_y < 0);
 		collector.rotateCollector(gamepad2.a, gamepad2.b);

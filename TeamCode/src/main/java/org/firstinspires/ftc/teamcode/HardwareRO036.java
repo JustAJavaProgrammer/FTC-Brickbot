@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -97,6 +96,8 @@ public class HardwareRO036 {
         motorRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorExtension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        //TODO: LIFT HERE
+        //TODO: SERVO LIFT HERE
 
         servoWall.setPosition(0);
         servoBox.setPosition(0.1);

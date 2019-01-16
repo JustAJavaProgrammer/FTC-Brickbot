@@ -26,8 +26,8 @@ public class Drive {
 	private static final double DRIVE_GEAR_REDUCTION    = 2.0d;         // Speed reduction
 	private static final double COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-	private static final double DRIVE_SPEED  = 0.8d;
-	private static final double TURN_SPEED   = 0.8d;
+	private static final double DRIVE_SPEED  = 1.0d;
+	private static final double TURN_SPEED   = 1.0d;
 
 	static final double HEADING_THRESHOLD   = 1 ;       // Ignore error if the angle is less than the threshold
 	static final double P_TURN_COEFF        = 0.1;
