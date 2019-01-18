@@ -90,6 +90,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 @SuppressWarnings("All")
 
 @Autonomous(name="Brickbot: FATACRATER", group="CNU")
+@Disabled
 
 public class  AutonomFataCrater extends LinearOpMode {
 

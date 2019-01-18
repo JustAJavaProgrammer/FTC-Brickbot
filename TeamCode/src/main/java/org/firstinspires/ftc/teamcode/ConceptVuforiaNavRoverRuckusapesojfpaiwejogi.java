@@ -91,8 +91,11 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * is explained below.
  */
 
+@SuppressWarnings("All")
+
 @TeleOp(name="Concept: Vuforia Rover Nav asdm/fasl", group ="Concept")
-//@Disabled
+@Disabled
+
 public class ConceptVuforiaNavRoverRuckusapesojfpaiwejogi extends LinearOpMode {
 
     /*

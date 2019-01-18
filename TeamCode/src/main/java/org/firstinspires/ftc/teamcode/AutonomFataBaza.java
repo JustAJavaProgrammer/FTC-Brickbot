@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -25,7 +26,7 @@ import java.util.List;
 @SuppressWarnings("All")
 
 @Autonomous(name="Brickbot: FATABAZA", group="CNU")
-//@Disabled
+@Disabled
 public class AutonomFataBaza extends LinearOpMode {
 
     static final double HEADING_THRESHOLD   = 1 ;       // Ignore error if the angle is less than the threshold
