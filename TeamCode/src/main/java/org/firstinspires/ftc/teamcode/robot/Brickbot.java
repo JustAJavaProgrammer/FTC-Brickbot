@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,9 +11,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 //import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 //import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @SuppressWarnings("All")
@@ -28,6 +30,7 @@ public class Brickbot {         //TODO: Implement threads
 	}
 
 	public Telemetry telemetry;
+	public DigitalChannel digIn;
 
 	/* Gyro */
 	public ModernRoboticsI2cGyro gyro;
@@ -39,11 +42,16 @@ public class Brickbot {         //TODO: Implement threads
 	public DcMotor motorBackRight;
 	public DcMotor motorRotation;
 	public DcMotor motorExtension;
+	public DcMotor motorLift;
 
 	/* Servos */
 	public CRServo crServo;
 	public Servo servoWall;
 	public Servo servoBox;
+
+	/* Senzori */
+	public DigitalChannel limitSwitchSus;
+	public DigitalChannel limitSwitchJos;
 
 	/* Members */
 	//TODO: Verify ore coords
@@ -57,6 +65,8 @@ public class Brickbot {         //TODO: Implement threads
 	private     Drive.Direction         Direction           = null;
 
 	private     Collector               collector           = new Collector();
+
+	private     Lift                    lift                = new Lift();
 
 	protected   DistanceUnit            distanceUnit        = DistanceUnit.CM;
 	protected   AngleUnit               angleUnit           = AngleUnit.DEGREES;
@@ -75,10 +85,14 @@ public class Brickbot {         //TODO: Implement threads
 		motorBackRight = hwMap.get(DcMotor.class, "motorbr");
 		motorRotation = hwMap.get(DcMotor.class, "motorRotation");
 		motorExtension = hwMap.get(DcMotor.class, "motorExtension");
+		motorLift = hwMap.get(DcMotor.class, "motorLift");
 
 		servoBox = hwMap.servo.get("servobox");
 		servoWall = hwMap.servo.get("servowall");
 		crServo = hwMap.crservo.get("crservo");
+
+		limitSwitchJos=hwMap.get(DigitalChannel.class,"LimitSensorJos");
+		limitSwitchSus=hwMap.get(DigitalChannel.class,"LimitSensorSus");
 
 		telemetry.addData(">", "Calibrating Gyro");
 		telemetry.update();
@@ -91,6 +105,7 @@ public class Brickbot {         //TODO: Implement threads
 		motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorRotation.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorExtension.setDirection(DcMotorSimple.Direction.FORWARD);
+		motorLift.setDirection(DcMotorSimple.Direction.FORWARD);
 
 		crServo.setDirection(CRServo.Direction.REVERSE);
 		servoWall.setDirection(Servo.Direction.REVERSE);
@@ -102,6 +117,7 @@ public class Brickbot {         //TODO: Implement threads
 		motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		motorRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		motorExtension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 		//while (gyro.isCalibrating()) {}
 
@@ -111,6 +127,7 @@ public class Brickbot {         //TODO: Implement threads
 		motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		motorRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		motorExtension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 		servoWall.setPosition(0);
 

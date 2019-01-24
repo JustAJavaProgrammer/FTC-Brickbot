@@ -12,7 +12,7 @@ public class Collector {
 
 	/* Constants */
 	private static final double COUNTS_PER_MOTOR_REV    = 1680.0d;
-	private static final double ROTATION_GEAR_REDUCTION = 3.0d;
+	private static final double ROTATION_GEAR_REDUCTION = 9.0d;
 
 	public void rotateArm(boolean btnOpen, boolean btnClose) {
 		if(btnOpen) {
