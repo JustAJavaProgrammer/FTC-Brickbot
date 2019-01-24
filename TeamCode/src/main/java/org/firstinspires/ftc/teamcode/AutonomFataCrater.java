@@ -1,31 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.RobotLog;
-import com.qualcomm.robotcore.util.ThreadPool;
-import com.vuforia.Frame;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.function.Consumer;
-import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -38,47 +27,9 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaException;
 import org.firstinspires.ftc.teamcode.robot.Collector;
 
-
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-//package org.firstinspires.ftc.robotcontroller.external.samples;
-
-import android.graphics.Bitmap;
-
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
-import com.qualcomm.robotcore.util.ThreadPool;
-import com.vuforia.Frame;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.function.Consumer;
-import org.firstinspires.ftc.robotcore.external.function.Continuation;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -87,10 +38,11 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
+//package org.firstinspires.ftc.robotcontroller.external.samples;
+
 @SuppressWarnings("All")
 
 @Autonomous(name="Brickbot: FATACRATER", group="CNU")
-@Disabled
 
 public class  AutonomFataCrater extends LinearOpMode {
 
@@ -110,6 +62,7 @@ public class  AutonomFataCrater extends LinearOpMode {
     private static final double COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     private static final double DRIVE_SPEED  = 0.8d;
     private static final double TURN_SPEED   = 0.8d;
+
 
 
     public Collector collector = new Collector();
@@ -173,12 +126,16 @@ public class  AutonomFataCrater extends LinearOpMode {
         robot.motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.motorRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.motorExtension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         robot.motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorExtension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         telemetry.addData("Status", "Calibrare Gyro");    //
         telemetry.update();
@@ -219,7 +176,9 @@ public class  AutonomFataCrater extends LinearOpMode {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
 
-                    //TODO: LIFT GOES HERE
+                    //TODO: LIFT IS DONE BUT NOT TESTED
+
+                    lift(Direction.BACKWARD,1);
 
                     String position = getGoldOrePosition();
 
@@ -1043,5 +1002,35 @@ public class  AutonomFataCrater extends LinearOpMode {
 
     }
 
+    public void lift(Direction direction, double power){
+
+        robot.motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.waitForTick(40);
+
+        robot.motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        /*distance = Math.abs(distance);
+        int modifier = (int)(robot.distanceUnit.toInches(distance) * COUNTS_PER_INCH);*/
+
+        DigitalChannel limitSwitchSus;
+        DigitalChannel limitSwitchJos;
+
+        limitSwitchSus = hardwareMap.get(DigitalChannel.class, "LimitSensorSus");
+        limitSwitchJos = hardwareMap.get(DigitalChannel.class, "LimitSensorJos");
+
+        limitSwitchSus.setMode(DigitalChannel.Mode.INPUT);
+        limitSwitchJos.setMode(DigitalChannel.Mode.INPUT);
+
+        double speed=power;
+
+        while (opModeIsActive() && (limitSwitchSus.getState() && limitSwitchJos.getState()) /* && (robot.motorLift.getCurrentPosition()<modifier)*/ ) {
+            switch (direction) {
+                case FORWARD:
+                    robot.motorLift.setPower(speed);
+                case BACKWARD:
+                    robot.motorLift.setPower(-speed);
+            }
+        }
+    }
 
 }

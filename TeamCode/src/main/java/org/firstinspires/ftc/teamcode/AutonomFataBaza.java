@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.content.res.Resources;
-//import android.drm.DrmInfoRequest;
 import android.support.annotation.NonNull;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -23,10 +22,12 @@ import org.firstinspires.ftc.teamcode.robot.Collector;
 
 import java.util.List;
 
+//import android.drm.DrmInfoRequest;
+
 @SuppressWarnings("All")
 
 @Autonomous(name="Brickbot: FATABAZA", group="CNU")
-@Disabled
+
 public class AutonomFataBaza extends LinearOpMode {
 
     static final double HEADING_THRESHOLD   = 1 ;       // Ignore error if the angle is less than the threshold
@@ -45,7 +46,8 @@ public class AutonomFataBaza extends LinearOpMode {
     private static final double COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     private static final double DRIVE_SPEED  = 0.8d;
     private static final double TURN_SPEED   = 0.8d;
-
+    private static final double LIFT_GEAR_REDUCTION = 3.0d;
+    private static final double COUNTS_PER_INCH_LIFT  = (COUNTS_PER_MOTOR_REV * LIFT_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
     public Collector collector = new Collector();
 
@@ -86,12 +88,15 @@ public class AutonomFataBaza extends LinearOpMode {
         robot.motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.motorRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.motorExtension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         robot.motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorRotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorExtension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.addData("Status", "Calibrare Gyro");    //
         telemetry.update();
@@ -131,7 +136,9 @@ public class AutonomFataBaza extends LinearOpMode {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
 
-                    //TODO: LIFT GOES HERE
+                    //TODO: LIFT IS DONE BUT NOT TESTED
+
+                    lift(Direction.BACKWARD,1);
 
                     String position = getGoldOrePosition();
 
@@ -802,5 +809,36 @@ public class AutonomFataBaza extends LinearOpMode {
                 break;
         }
 
+    }
+
+    public void lift(Direction direction, double power){
+
+        robot.motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.waitForTick(40);
+
+        robot.motorLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        /*distance = Math.abs(distance);
+        int modifier = (int)(robot.distanceUnit.toInches(distance) * COUNTS_PER_INCH);*/
+
+        DigitalChannel limitSwitchSus;
+        DigitalChannel limitSwitchJos;
+
+        limitSwitchSus = hardwareMap.get(DigitalChannel.class, "LimitSensorSus");
+        limitSwitchJos = hardwareMap.get(DigitalChannel.class, "LimitSensorJos");
+
+        limitSwitchSus.setMode(DigitalChannel.Mode.INPUT);
+        limitSwitchJos.setMode(DigitalChannel.Mode.INPUT);
+
+        double speed=power;
+
+        while (opModeIsActive() && (limitSwitchSus.getState() && limitSwitchJos.getState()) /* && (robot.motorLift.getCurrentPosition()<modifier)*/ ) {
+            switch (direction) {
+                case FORWARD:
+                    robot.motorLift.setPower(speed);
+                case BACKWARD:
+                    robot.motorLift.setPower(-speed);
+            }
+        }
     }
 }
