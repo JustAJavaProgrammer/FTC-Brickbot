@@ -13,7 +13,7 @@ public class Lift {
     private static final double COUNTS_PER_INCH  = (COUNTS_PER_MOTOR_REV * LIFT_GEAR_REDUCTION / Math.PI);
     private static final double LIFT_SPEED  = 1.0d;
 
-    public Lift(){
+    public Lift() {
 
     }
 

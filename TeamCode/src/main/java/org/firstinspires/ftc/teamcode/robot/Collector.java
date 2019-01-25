@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 public class Collector {
 	private Brickbot robot = Brickbot.getInstance();
 
-	private static final double ROTATION_SPEED = 0.2d;
+	private static final double ROTATION_SPEED = 0.4d;
 	private static final double EXTENSION_SPEED = 1.0d;
 
 	/* Constants */
